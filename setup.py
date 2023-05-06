@@ -10,4 +10,5 @@ setup(
             "club=club:cli",
         ],
     },
+    python_requires=">=3.6",
 )
