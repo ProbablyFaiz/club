@@ -1,6 +1,6 @@
 # Club
 
-Club is a small CLI library for making local Google Apps Script development
+Club (CLasp Upstream Bridge) is a small CLI library for making local Google Apps Script development
 a bit easier. Specifically, Club provides a way of managing and pushing
 to multiple remotes for a single Clasp project without manually editing
 `.clasp.json` files.
