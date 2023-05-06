@@ -113,11 +113,6 @@ def set_remote_cmd(name: str, project_id: str):
             f"Invalid project ID: {project_id}",
             param_hint="project_id",
         )
-    if name == "all":
-        raise click.BadParameter(
-            "Cannot set remote named 'all'.",
-            param_hint="name",
-        )
     manifest = read_manifest()
     set_club_key(manifest, name, project_id)
     write_manifest(manifest)
@@ -165,11 +160,6 @@ def rename_remote_cmd(old_name: str, new_name: str):
             f"Remote '{DEFAULT_PROJECT_NAME}' is the default destination for 'club push'. Renaming it will require you to specify a destination when pushing. Continue?",
             abort=True,
         )
-    if new_name == "all":
-        raise click.BadParameter(
-            "Cannot rename remote to 'all'.",
-            param_hint="new_name",
-        )
     if new_name in manifest[CLUB_KEY]:
         click.confirm(
             f"Remote {new_name} already exists (project ID: {manifest[CLUB_KEY][new_name]}). Overwrite?",
@@ -184,19 +174,34 @@ def rename_remote_cmd(old_name: str, new_name: str):
 @cli.command(name="push")
 @click.argument(
     "names",
+    nargs=-1,
     type=str,
     required=False,
+    metavar="[remote1] [remote2] ...",
 )
-def push_cmd(names: str):
+@click.option(
+    "--all",
+    "-a",
+    "all_",  # all is a built-in function in Python
+    is_flag=True,
+    help="Push to all remotes.",
+)
+def push_cmd(names: list[str], all_: bool):
     """Push the project in the current directory to the remote destination(s), comma-separated. If "all" is given, push to all remotes."""
     manifest = read_manifest()
     if CLUB_KEY not in manifest:
         raise click.UsageError(
             "This directory is not set up as a club project. Run `club init` to initialize it with default settings or set a remote using `club set`.",
         )
+    if names and all_:
+        raise click.UsageError(
+            "Cannot specify both remotes and --all. You probably made a typo.",
+        )
     possible_names = list(manifest[CLUB_KEY].keys())
     if not names:
-        if DEFAULT_PROJECT_NAME in possible_names:
+        if all_:
+            names = possible_names
+        elif DEFAULT_PROJECT_NAME in possible_names:
             names = DEFAULT_PROJECT_NAME
         elif len(possible_names) == 1:
             names = possible_names[0]
@@ -205,7 +210,6 @@ def push_cmd(names: str):
                 "No default remote is set and more than one exists. Please specify a remote to push to, or rename one of your remotes: `club rename [name] main`.",
                 param_hint="names",
             )
-    names = names.split(",") if names != "all" else list(manifest[CLUB_KEY].keys())
     for name in names:
         push(name, manifest)
 
