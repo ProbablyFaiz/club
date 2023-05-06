@@ -15,14 +15,16 @@ Options:
 
 Commands:
   init    Initialize the current directory as a club project.
-  push    Push the project in the current directory to the remote...
-  remove  Remove a remote destination for the project in the current...
+  list    List the remote destinations for the project in the current directory.
+  push    Push the project in the current directory to the remote destination(s).
+  remove  Remove a remote destination for the project in the current directory.
   set     Add a remote destination for the project in the current directory.
 ```
 
 ## Installation
 
 Club requires Python 3.6 or higher. To install, run:
+
 ```bash
 git clone https://github.com/ProbablyFaiz/club
 cd club
@@ -30,6 +32,7 @@ python3 -m pip install .
 ```
 
 ## Usage
+
 At the top level of your project, run `club init` to initialize the project's Club configuration.
 If you have a `scriptId` set in your `.clasp.json` file, Club will automatically set that as the
 default remote, `main`. Otherwise, you can create any remote you want with `club set <remote> <scriptId>`.

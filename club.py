@@ -25,6 +25,14 @@ def club_manifest() -> Path:
     return club_wd() / MANIFEST_NAME
 
 
+def club_setup() -> bool:
+    """Return whether the current directory is set up as a club project."""
+    if not club_manifest().exists():
+        return False
+    manifest = read_manifest()
+    return CLUB_KEY in manifest
+
+
 def read_manifest() -> dict:
     """Read the manifest file and return the parsed JSON."""
     with open(club_manifest(), "r") as f:
@@ -136,7 +144,7 @@ def remove_remote_cmd(name: str):
     write_manifest(manifest)
 
 
-@click.command(name="rename")
+@cli.command(name="rename")
 @click.argument(
     "old_name",
     type=str,
@@ -171,6 +179,18 @@ def rename_remote_cmd(old_name: str, new_name: str):
     write_manifest(manifest)
 
 
+@cli.command(name="list")
+def list_cmd():
+    """List the remote destinations for the project in the current directory."""
+    if not club_setup():
+        raise click.UsageError(
+            "This directory is not set up as a club project. Run `club init` to set it up.",
+        )
+    manifest = read_manifest()
+    for name, project_id in manifest[CLUB_KEY].items():
+        click.echo(f"{name}: {project_id}")
+
+
 @cli.command(name="push")
 @click.argument(
     "names",
@@ -188,11 +208,11 @@ def rename_remote_cmd(old_name: str, new_name: str):
 )
 def push_cmd(names: list[str], all_: bool):
     """Push the project in the current directory to the remote destination(s), comma-separated. If "all" is given, push to all remotes."""
-    manifest = read_manifest()
-    if CLUB_KEY not in manifest:
+    if not club_setup():
         raise click.UsageError(
             "This directory is not set up as a club project. Run `club init` to initialize it with default settings or set a remote using `club set`.",
         )
+    manifest = read_manifest()
     if names and all_:
         raise click.UsageError(
             "Cannot specify both remotes and --all. You probably made a typo.",
@@ -202,9 +222,9 @@ def push_cmd(names: list[str], all_: bool):
         if all_:
             names = possible_names
         elif DEFAULT_PROJECT_NAME in possible_names:
-            names = DEFAULT_PROJECT_NAME
+            names = [DEFAULT_PROJECT_NAME]
         elif len(possible_names) == 1:
-            names = possible_names[0]
+            names = [possible_names[0]]
         else:
             raise click.BadParameter(
                 "No default remote is set and more than one exists. Please specify a remote to push to, or rename one of your remotes: `club rename [name] main`.",
