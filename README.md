@@ -15,10 +15,10 @@ Options:
 
 Commands:
   init    Initialize the current directory as a club project.
+  set     Add a remote destination for the project in the current directory.
+  remove  Remove a remote destination for the project in the current directory.
   list    List the remote destinations for the project in the current directory.
   push    Push the project in the current directory to the remote destination(s).
-  remove  Remove a remote destination for the project in the current directory.
-  set     Add a remote destination for the project in the current directory.
 ```
 
 ## Installation

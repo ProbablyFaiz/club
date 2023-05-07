@@ -188,6 +188,8 @@ def list_cmd():
         )
     manifest = read_manifest()
     for name, project_id in manifest[CLUB_KEY].items():
+        if name == "main":
+            name = click.style(name, bold=True)
         click.echo(f"{name}: {project_id}")
 
 
