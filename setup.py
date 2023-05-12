@@ -2,7 +2,7 @@ from setuptools import setup
 
 setup(
     name="club",
-    version="0.2.0",
+    version="0.2.1",
     py_modules=["club"],
     install_requires=["click"],
     entry_points={

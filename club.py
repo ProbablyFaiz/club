@@ -63,7 +63,7 @@ def push(name: str, manifest: dict = None):
     write_manifest(manifest)
     click.echo(f"Pushing to {name}...")
     try:
-        subprocess.run(["clasp", "push"], check=True)
+        subprocess.run(["clasp", "push", "-f"], check=True)
     except subprocess.CalledProcessError:
         write_manifest(manifest_backup)
         raise
